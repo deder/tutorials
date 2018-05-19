@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Express Movies</title>
+        <link rel="stylesheet" href="/public/style.css">
+    </head>
+    <body>
+        <div class="central">
+            <% include ./partials/header %>
+            <h1><%=title %></h1>
+            <div class="frenchMovies">
+                    <% for(movie of frenchMovies ) { %>
+                        <div><%= movie.title %> - <%= movie.year %> </div>
+                    <% } %>
+            </div>
+            <br>
+            <div>
+                <form action="/movies" method="post">
+                    <label for="movieTitle">Titre du film</label><input type="text" name="movieTitle" class="movieTitle">
+                    <label for="movieYear">Année du film</label><input type="text" name="movieYear" class="movieYear">
+                    <button type="submit">Ajouter le film</button>
+                </form>
+            </div>
+        </div>
+        <% include ./partials/footer %>
+        <script>
+            const form = document.querySelector('form');
+             function addMovie(){
+                event.preventDefault();
+                if(fetch){
+                    fetch("/movies",{
+                        method: 'POST',
+                        body: new FormData(form)
+                    })
+                    .then(checkStatus)
+                    .catch((err)=>{
+                        console.error(err);
+                    });
+                }
+
+            };
+            function checkStatus(response){
+                if(response.status >= 200 && response.status <300){
+                    let newMovieDiv = document.createElement('div');
+                    const movieTitle = document.querySelector('input.movieTitle').value;
+                    const movieYear = document.querySelector('input.movieYear').value;
+                    newMovieDiv.innerHTML = ` ${movieTitle} - ${movieYear}`;
+                    document.querySelector('.frenchMovies').appendChild(newMovieDiv);
+                    form.reset();
+                }
+
+            }
+            form.addEventListener('submit', addMovie);
+        </script>
+    </body>
+</html>

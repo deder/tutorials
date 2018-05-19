@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Express Movies</title>
+        <link rel="stylesheet" href="/public/style.css">
+    </head>
+    <body>
+        <div class="central">
+            <% include ./partials/header %>
+            <h1>Votre recherche sur <em>The Movie Database</em> </h1>
+            <div>
+                <input type="text" name="term" placeholder="Titre d'un film">
+                <button id="btnSearch">Chercher</button>
+            </div>
+            <div class="result">
+            </div>
+        </div>
+        <% include ./partials/footer %>
+        <script>
+            const form = document.querySelector('form');
+            function addMovie(){
+                event.preventDefault();
+                if(fetch){
+                    fetch("/login",{
+                        method: 'POST',
+                        body: new FormData(form)
+                    })
+                    .then(checkStatus)
+                    .catch((err)=>{
+                        console.error(err);
+                    });
+                }
+
+            };
+            function checkStatus(response){
+                if(response.status >= 200 && response.status <300){
+                    let newMovieDiv = document.createElement('div');
+                    const login = document.querySelector('input.movieTitle').value;
+                    const movieYear = document.querySelector('input.movieYear').value;
+                    newMovieDiv.innerHTML = ` ${movieTitle} - ${movieYear}`;
+                    document.querySelector('.frenchMovies').appendChild(newMovieDiv);
+                    form.reset();
+                }
+            }
+            form.addEventListener('submit', addMovie);
+        </script>
+    </body>
+</html>
