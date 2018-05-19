@@ -4,7 +4,7 @@ const multer = require('multer');
 const app = express();
 
 const upload = multer();
-const PORT = 3000;
+const PORT = 3001;
 
 const urlEncodedParser = bodyParser.urlencoded({extended: false});
 
