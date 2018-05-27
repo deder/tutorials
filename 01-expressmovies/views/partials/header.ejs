@@ -1,9 +1,81 @@
+<script>
+        (function(exports, d) {
+      function domReady(fn, context) {
+    
+        function onReady(event) {
+          d.removeEventListener("DOMContentLoaded", onReady);
+          fn.call(context || exports, event);
+        }
+    
+        function onReadyIe(event) {
+          if (d.readyState === "complete") {
+            d.detachEvent("onreadystatechange", onReadyIe);
+            fn.call(context || exports, event);
+          }
+        }
+    
+        d.addEventListener && d.addEventListener("DOMContentLoaded", onReady) ||
+        d.attachEvent      && d.attachEvent("onreadystatechange", onReadyIe);
+      }
+    
+      exports.domReady = domReady;
+    })(window, document);
+    const keyToken = "token";
+    let connectionMenu;
+    const showSignOutMenu = function(){
+        connectionMenu.innerHTML = '<a href="javascript:logOutAction()">Se deconnecter</a>';
+    }
+    const logOutAction = function(){
+        localStorage.removeItem(keyToken);
+        var event = document.createEvent('Event');
+        event.initEvent('logOut', true, true);
+        document.dispatchEvent(event);
+    }
+    const logInAction = function(token){
+        localStorage.setItem(keyToken,token);
+        var event = new CustomEvent("logIn", {
+            detail: {decodeToken:parseJwt(token)}
+        });
+        document.dispatchEvent(event);
+    }
+    const showSignInMenu = function(){
+        connectionMenu.innerHTML = `<a href="/connect">Se connecter</a>`;
+    }
+    const switchShowHideSignMenu = function(){
+        if(localStorage.getItem(keyToken)){
+            showSignOutMenu();
+        }else{
+            showSignInMenu();
+        }
+    }
+    const parseJwt = function(){
+        var tokenFromStorage = localStorage.getItem(keyToken);
+        if(tokenFromStorage){
+            var base64Payload = tokenFromStorage.split(".")[1];
+            return JSON.parse(window.atob(base64Payload))
+        }
+    }
+    document.addEventListener("logIn",function(event){
+        console.log(event.detail.decodeToken);
+        if(event && event.detail){
+            var decodeToken = event.detail.decodeToken;
+        }
+        switchShowHideSignMenu();
+    });
+    document.addEventListener("logOut",function(){
+        switchShowHideSignMenu();
+    });
+    domReady(function(){
+        connectionMenu = document.querySelector('.menu .connection');
+        switchShowHideSignMenu();
+    })
+</script>
 <header>
-    <ul>
+    <ul class="menu">
         <li><a href="/">index</a></li>
         <li><a href="/movies">liste de movie</a></li>
         <li><a href="/movies/6">detail movie 6</a></li>
         <li><a href="/movie-search">recherche de film</a></li>
-        <li><a href="/connect">Se connecter</a></li>
+        <li><span class="connection"><a href="/connect"></a></span></li>
     </ul>
 </header>
