@@ -10,8 +10,10 @@ const app = express();
 const upload = multer();
 //const urlEncodedParser = configServer.urlEncodedParser;
 const fakeUser = {email:"deder@deder.fr", password: "PassWord", user :"deder"};
-mongoose(`${dbConfig.protocol}${dbConfig.login}:${dbConfig.password}@${dbConfig.url}`);
+console.log(`${dbConfig.protocol}${dbConfig.login}:${dbConfig.password}@${dbConfig.url}`);
 const db = mongoose.connection;
+mongoose.connect(`${dbConfig.protocol}${dbConfig.login}:${dbConfig.password}@${dbConfig.url}`);
+//const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error: cannot connect'));
 db.once('open', () => {
     console.log('connected to the DB :)');
