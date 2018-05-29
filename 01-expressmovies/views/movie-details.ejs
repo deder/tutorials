@@ -10,7 +10,14 @@
             <% include ./partials/header %>
             <h1>Detail </h1>
             <div>
-                Voici le detail du film <%= movieId %>
+                <form action="/movie-details/<%= movie._id %>" method="POST">
+                    <legend>Modifier le film</legend>
+                    <label for="movieTitle">Titre du film</label>
+                    <input type="text" name="movieTitle" value="<%= movie.movieTitle %>" >
+                    <label for="movieYear">Année du film</label>
+                    <input type="text" name="movieYear" value="<%= movie.movieYear %>" >
+                    <button type="submit">Editer</button>
+                </form>
             </div>
         </div>
         <% include ./partials/footer %>

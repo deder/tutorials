@@ -1,27 +1,20 @@
-const form = document.querySelector('form');
-function addMovie(){
-   event.preventDefault();
-   if(fetch){
-       fetch("/movies",{
-           method: 'POST',
-           body: new FormData(form)
-       })
-       .then(checkStatus)
-       .catch((err)=>{
-           console.error(err);
-       });
-   }
-
+let deleteBtns = document.querySelectorAll('.deleteBtn');
+function deleteMovie(res){
+    var elmData = res.srcElement.dataset;
+    if (confirm("Voulez-vous vraiment supprimer le film " + elmData.movietitle)) {
+        var query = `/movie-details/${elmData.id}`;
+        axios.delete(query)
+        .then((res)=>{
+            window.location.reload();
+        }).catch((err)=>{
+            console.error(err);
+        })
+    }
+    
 };
-function checkStatus(response){
-   if(response.status >= 200 && response.status <300){
-       let newMovieDiv = document.createElement('div');
-       const movieTitle = document.querySelector('input.movieTitle').value;
-       const movieYear = document.querySelector('input.movieYear').value;
-       newMovieDiv.innerHTML = ` ${movieTitle} - ${movieYear}`;
-       document.querySelector('.frenchMovies').appendChild(newMovieDiv);
-       form.reset();
-   }
-
-}
-form.addEventListener('submit', addMovie);
+for(var index in deleteBtns){
+    var item =  deleteBtns[index];
+    if(!isNaN(index)){
+        item.addEventListener("click", deleteMovie);
+    }
+};

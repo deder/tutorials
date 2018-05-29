@@ -8,10 +8,10 @@ const mongoose = require('mongoose');
 const faker = require('faker');
 const app = express();
 const upload = multer();
-
 faker.locale = "fr";
 
-//const urlEncodedParser = configServer.urlEncodedParser;
+
+const urlEncodedParser = configServer.urlEncodedParser;
 const fakeUser = {email:"deder@deder.fr", password: "PassWord", user :"deder"};
 console.log(`${dbConfig.protocol}${dbConfig.login}:${dbConfig.password}@${dbConfig.url}`);
 const db = mongoose.connection;
@@ -61,13 +61,14 @@ var url = {
     addMovie: "/movies/add",
     selectMovie: "/movies/:id",
     searchMovie: "/movie-search",
+    detailsMovie: "/movie-details",
     connect: "/connect",
     member: "/member-only"
 };
 
 
 app.use(url.staticContent , express.static('public'));
-app.use(expressJwt({secret:configServer.secret}).unless({path: [url.root, url.connect, url.movies, url.addMovie, , url.searchMovie, new RegExp('/movies.*/', 'i')]}));
+app.use(expressJwt({secret:configServer.secret}).unless({path: [url.root, url.connect, url.movies, url.addMovie, , url.searchMovie,'/favicon.ico', new RegExp(`/movie-details.*/`, 'i')]}));
 
 app.set('views', 'views');
 app.set('view engine', 'ejs');
@@ -78,7 +79,6 @@ app.get(url.root, (req, res) => {
 
 app.get(url.movies, (req, res) => {
     const title = `Film Français des trentes dernieres années`;
-
     frenchMovies = [];
     Movie.find((err, movies) =>{
         if(err){
@@ -92,7 +92,7 @@ app.get(url.movies, (req, res) => {
     
 });
 
-app.post(url.movies, upload.fields([]), (req, res) => {
+app.post(url.movies, urlEncodedParser, (req, res) => {
     if(!req.body){
         res.sendStatus(500);
     }else{
@@ -107,7 +107,7 @@ app.post(url.movies, upload.fields([]), (req, res) => {
                 res.sendStatus(500);
             }else{
                 console.log("savedMovie", savedMovie);
-                res.sendStatus(201);
+                res.redirect(url.movies);
             }
 
         })
@@ -120,10 +120,52 @@ app.get(url.selectMovie, (req, res) => {
     res.render('movie-details', { movieId: id});
 });
 
-app.put("/movies/:id", (req, res) => {
+app.get(`${url.detailsMovie}/:id`,(req, res) => {
     const id = req.params.id;
-    res.send(`Put request to movie of id ${id}`);
+    Movie.findById(id, (err, movie) =>{
+        if(err){
+            console.log(err);
+            return res.send('le film n\'a pas pu être mis à jour');
+        }
+        //res.json(movie);
+        res.render('movie-details', {movie});
+    })
+
 });
+
+app.post(`${url.detailsMovie}/:id`, urlEncodedParser, (req, res) => {
+    if(!req.body){
+        res.sendStatus(500);
+    }
+    console.log('movieTitle: ', req.body.movieTitle, 'movieYear : ', req.body.movieYear);
+    const id = req.params.id;
+
+    Movie.findByIdAndUpdate(id, {$set: {movieTitle: req.body.movieTitle, movieYear: req.body.movieYear}}, {new :true}, 
+        (err, movie) =>{
+        if(err){
+            console.error(err);
+            res.sendStatus(500);
+        }else{
+            //res.json(movie);
+            res.redirect(`${url.detailsMovie}/${movie._id}`)
+        }
+    });
+});
+
+app.delete(`${url.detailsMovie}/:id`, (req, res) => {
+    const id = req.params.id;
+    Movie.findByIdAndRemove(id, 
+        (err, movie) =>{
+        if(err){
+            console.error(err);
+            res.sendStatus(500);
+        }else{
+            res.sendStatus(202);
+            //res.redirect(`${url.detailsMovie}/${movie._id}`)
+        }
+    });
+});
+
 
 app.get(url.searchMovie, (req, res) => {
     res.render('movie-search');

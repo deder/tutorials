@@ -11,7 +11,11 @@
             <h1><%=title %></h1>
             <div class="frenchMovies">
                     <% for(movie of frenchMovies ) { %>
-                        <div><%= movie.movieTitle %> - <%= movie.movieYear %> </div>
+                        <div>
+                            <%= movie.movieTitle %> - <%= movie.movieYear %>&nbsp;&nbsp;
+                            <a href="/movie-details/<%= movie._id %>">Modifier</a>
+                            <button class="deleteBtn" data-id="<%= movie._id %>" data-movietitle="<%= movie.movieTitle %>" data-movieyear="<%= movie.movieYear %>">&#9003;</button>
+                        </div>
                     <% } %>
             </div>
             <br>
@@ -24,6 +28,7 @@
             </div>
         </div>
         <% include ./partials/footer %>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="/public/js/movies.js"></script>
     </body>
 </html>
