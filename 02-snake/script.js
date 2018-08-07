@@ -1,8 +1,8 @@
 window.onload = () => {
     class Game {
-        constructor() {
-            this.canvasWidth = 900;
-            this.canvasHeight = 600;
+        constructor(canvasWidth = 900, canvasHeight = 600) {
+            this.canvasWidth = canvasWidth;
+            this.canvasHeight = canvasHeight;
             this.blockSize = 30;
             this.canvas = document.createElement('canvas');
             this.ctx = this.canvas.getContext('2d');
@@ -220,7 +220,7 @@ window.onload = () => {
 
     }
 
-    let myGame = new Game();
+    let myGame = new Game(300,300);
     myGame.init();
 
     document.onkeydown = (e) => {
