@@ -45,7 +45,7 @@ export default class Snake {
             default:
                 throw ("invalid direction");
         }
-        if (allowedDirections.include(newDirection)) {
+        if (allowedDirections.includes(newDirection)) {
             this.direction = newDirection;
         }
     }
