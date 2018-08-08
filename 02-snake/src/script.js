@@ -1,3 +1,4 @@
+import "babel-polyfill"
 import Game from "./components/Game.js"
 window.onload = () => {
     let myGame = new Game(650, 650);
